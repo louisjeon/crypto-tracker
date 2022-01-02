@@ -1,7 +1,8 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoins } from "../api";
 
 const Container = styled.div`
   padding: 0 20px;
@@ -51,7 +52,7 @@ const Img = styled.img`
   margin-right: 10px;
 `;
 
-interface Coin {
+interface ICoin {
   id: string;
   is_active: boolean;
   is_new: boolean;
@@ -62,31 +63,27 @@ interface Coin {
 }
 
 function Coins() {
-  const [coins, setCoins] = useState<Coin[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const getCoins = async () => {
-      const res = await axios.get("https://api.coinpaprika.com/v1/coins");
-      setCoins(res.data.slice(0, 100));
-      setLoading(false);
-    };
-    getCoins();
-  }, []);
+  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
 
   return (
     <Container>
+      <Helmet>
+        <title>Cypto Tracker</title>
+      </Helmet>
       <Header>
-        <Title>Coin</Title>
+        <Title>Cypto Tracker</Title>
       </Header>
-      {loading ? (
+      {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <CoinsList>
-          {coins.map((coin) => (
+          {data?.slice(0, 100).map((coin) => (
             <Coin key={coin.id}>
               <Link
-                to={{ pathname: `/${coin.id}`, state: { name: coin.name } }}
+                to={{
+                  pathname: `/${coin.id}/chart`,
+                  state: { name: coin.name },
+                }}
               >
                 <Img
                   src={`https://cryptoicon-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
