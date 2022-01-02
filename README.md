@@ -8,6 +8,6 @@ Crypto Tracker App is web application for tracking crypto prices and status.
 
 - React
 
-- Axios
+- React Query
 
 - Styled-Components
