@@ -15,12 +15,15 @@ interface IHistorical {
 
 interface ChartProps {
   coinId: string;
-  symbol: string | undefined;
 }
 
-function Chart({ coinId, symbol }: ChartProps) {
-  const { isLoading, data } = useQuery<IHistorical[]>(["ohlcv", coinId], () =>
-    fetchCoinHistory(coinId)
+function Chart({ coinId }: ChartProps) {
+  const { isLoading, data } = useQuery<IHistorical[]>(
+    ["ohlcv", coinId],
+    () => fetchCoinHistory(coinId),
+    {
+      refetchInterval: 5000,
+    }
   );
 
   return (
@@ -32,7 +35,7 @@ function Chart({ coinId, symbol }: ChartProps) {
           type="candlestick"
           series={[
             {
-              name: symbol,
+              name: coinId,
               data: data?.map((price) => {
                 return {
                   x: price.time_close,
